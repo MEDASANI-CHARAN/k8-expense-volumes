@@ -19,13 +19,13 @@ metadata:
   name: mysql
   namespace: expense
 spec:
+  serviceName: "nginx"  # Ensure a Headless Service named "nginx" exists
+  replicas: 3
   selector:
     matchLabels:
       component: mysql
       project: expense
       tier: db
-  serviceName: "mysql"  # This can be any internal service name, ideally use a Headless Service for stable DNS
-  replicas: 3
   template:
     metadata:
       labels:
@@ -33,6 +33,13 @@ spec:
         project: expense
         tier: db
     spec:
+      initContainers:
+      - name: init-mysql-perms
+        image: busybox
+        command: ["sh", "-c", "chown -R 999:999 /var/lib/mysql"]
+        volumeMounts:
+        - name: mysql
+          mountPath: /var/lib/mysql
       containers:
       - name: mysql
         image: charan466/mysql:1.0.0
@@ -43,17 +50,18 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           value: ExpenseApp@1
         volumeMounts:
-        - name: mysql-storage
+        - name: mysql
           mountPath: /var/lib/mysql
   volumeClaimTemplates:
   - metadata:
-      name: mysql-storage
+      name: mysql
     spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: "expense-ebs"  # Your existing storage class
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "expense-ebs"
       resources:
         requests:
           storage: 4Gi
+
 
 
 # apiVersion: apps/v1
