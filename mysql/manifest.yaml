@@ -71,7 +71,6 @@ spec:
         environment: dev
         tier: db
     spec:
-      terminationGracePeriodSeconds: 10
       containers:
       - name: mysql
         image: charan466/mysql:1.0.0
