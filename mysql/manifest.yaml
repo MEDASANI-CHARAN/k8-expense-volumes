@@ -46,8 +46,8 @@ spec:
       - name: mysql
         image: charan466/mysql:1.0.0
         ports:
-        - containerPort: 80
-          name: web
+        - containerPort: 3306
+          name: mysql
         env:
           - name: MYSQL_ROOT_PASSWORD
             value: ExpenseApp@1
