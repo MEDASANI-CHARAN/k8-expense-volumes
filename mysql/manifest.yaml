@@ -35,13 +35,6 @@ spec:
         project: expense
         tier: db
     spec:
-      initContainers:
-        - name: init-mysql-perms
-          image: busybox
-          command: ["sh", "-c", "chown -R 999:999 /var/lib/mysql"]
-          volumeMounts:
-            - name: mysql
-              mountPath: /var/lib/mysql
       containers:
       - name: mysql
         image: charan466/mysql:1.0.0
