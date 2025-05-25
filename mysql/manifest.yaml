@@ -20,22 +20,21 @@ metadata:
   namespace: expense
 spec:
   selector:
-    matchLabels: # has to match .spec.template.metadata.labels
-      project: expense
+    matchLabels:
+      # has to match .spec.template.metadata.labels
       component: mysql
-      environment: dev
+      project: expense
       tier: db
   serviceName: "nginx"
   replicas: 3 # by default is 1
   template:
     metadata:
-      labels:  # has to match .spec.selector.matchLabels
-        project: expense
+      labels:
+        # has to match .spec.selector.matchLabels
         component: mysql
-        environment: dev
+        project: expense
         tier: db
     spec:
-      terminationGracePeriodSeconds: 10
       containers:
       - name: mysql
         image: charan466/mysql:1.0.0
