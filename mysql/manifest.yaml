@@ -41,9 +41,9 @@ spec:
         ports:
         - containerPort: 80
           name: web
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              value: ExpenseApp@1
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: ExpenseApp@1
         volumeMounts:
         - name: mysql
           mountPath: /var/lib/mysql
