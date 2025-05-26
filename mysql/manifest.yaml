@@ -19,27 +19,22 @@ metadata:
   name: mysql
   namespace: expense
 spec:
-  serviceName: "nginx"  # Ensure a Headless Service named "nginx" exists
-  replicas: 3
   selector:
     matchLabels:
+      # has to match .spec.template.metadata.labels
       component: mysql
       project: expense
       tier: db
+  serviceName: "nginx"
+  replicas: 3 # by default is 1
   template:
     metadata:
       labels:
+        # has to match .spec.selector.matchLabels
         component: mysql
         project: expense
         tier: db
     spec:
-      initContainers:
-      - name: init-mysql-perms
-        image: busybox
-        command: ["sh", "-c", "chown -R 999:999 /var/lib/mysql"]
-        volumeMounts:
-        - name: mysql
-          mountPath: /var/lib/mysql
       containers:
       - name: mysql
         image: charan466/mysql:1.0.0
@@ -47,58 +42,12 @@ spec:
         - containerPort: 3306
           name: mysql
         env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: ExpenseApp@1
+          - name: MYSQL_ROOT_PASSWORD
+            value: ExpenseApp@1
         volumeMounts:
         - name: mysql
           mountPath: /var/lib/mysql
-  volumeClaimTemplates:
-  - metadata:
-      name: mysql
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "expense-ebs"
-      resources:
-        requests:
-          storage: 4Gi
-
-
-
-# apiVersion: apps/v1
-# kind: StatefulSet
-# metadata:
-#   name: mysql
-#   namespace: expense
-# spec:
-#   selector:
-#     matchLabels:
-#       # has to match .spec.template.metadata.labels
-#       component: mysql
-#       project: expense
-#       tier: db
-#   serviceName: "nginx"
-#   replicas: 3 # by default is 1
-#   template:
-#     metadata:
-#       labels:
-#         # has to match .spec.selector.matchLabels
-#         component: mysql
-#         project: expense
-#         tier: db
-#     spec:
-#       containers:
-#       - name: mysql
-#         image: charan466/mysql:1.0.0
-#         ports:
-#         - containerPort: 3306
-#           name: mysql
-#         env:
-#           - name: MYSQL_ROOT_PASSWORD
-#             value: ExpenseApp@1
-#         volumeMounts:
-#         - name: mysql
-#           mountPath: /var/lib/mysql
-#       volumes:
-#       - name: mysql
-#         persistentVolumeClaim:
-#           claimName: mysql
+      volumes:
+      - name: mysql
+        persistentVolumeClaim:
+          claimName: mysql
