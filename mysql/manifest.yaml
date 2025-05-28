@@ -9,7 +9,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 8Gi
+      storage: 20Gi
 
 ---
 
@@ -39,8 +39,8 @@ spec:
       - name: mysql
         image: charan466/mysql:v1.0.0
         ports:
-        - containerPort: 3306
-          name: mysql
+        - containerPort: 80
+          name: web
         env:
           - name: MYSQL_ROOT_PASSWORD
             value: ExpenseApp@1
