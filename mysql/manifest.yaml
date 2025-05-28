@@ -1,17 +1,37 @@
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: mysql
-#   namespace: expense
-# spec:
-#   storageClassName: "expense-ebs" # Empty string must be explicitly set otherwise default StorageClass will be set
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 18Gi
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless
+  namespace: expense
+spec:
+  clusterIP: None # This is called headless service
+  selector:
+    component: mysql
+    project: expense
+    tier: db
+  ports:
+  - protocol: TCP
+    port: 3306 #service-port
+    targetPort: 3306 #target-port
 
-# ---
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: expense
+spec:
+  selector:
+    component: mysql
+    project: expense
+    tier: db
+  ports:
+  - protocol: TCP
+    port: 3306 #service-port
+    targetPort: 3306 #target-port
+
+---
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -19,8 +39,8 @@ metadata:
   name: mysql
   namespace: expense
 spec:
-  serviceName: "mysql" # you must create this Headless Service
-  replicas: 3
+  serviceName: "mysql-headless" # you must create this Headless Service
+  replicas: 2
   selector:
     matchLabels:
       component: mysql
@@ -47,6 +67,7 @@ spec:
           mountPath: /var/lib/mysql
       nodeSelector:
         topology.kubernetes.io/zone: us-east-1f
+  # PVC declaration, it is mandatory
   volumeClaimTemplates:
   - metadata:
       name: mysql
@@ -56,21 +77,3 @@ spec:
       resources:
         requests:
           storage: 2Gi
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql
-  namespace: expense
-spec:
-  clusterIP: None # This is called headless service
-  selector:
-    component: mysql
-    project: expense
-    tier: db
-  ports:
-  - protocol: TCP
-    port: 3306 #service-port
-    targetPort: 3306 #target-port
