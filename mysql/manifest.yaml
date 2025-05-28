@@ -1,17 +1,17 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mysql
-  namespace: expense
-spec:
-  storageClassName: "expense-ebs" # Empty string must be explicitly set otherwise default StorageClass will be set
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 18Gi
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: mysql
+#   namespace: expense
+# spec:
+#   storageClassName: "expense-ebs" # Empty string must be explicitly set otherwise default StorageClass will be set
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 18Gi
 
----
+# ---
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -19,18 +19,16 @@ metadata:
   name: mysql
   namespace: expense
 spec:
+  serviceName: "mysql" # you must create this Headless Service
+  replicas: 3
   selector:
     matchLabels:
-      # has to match .spec.template.metadata.labels
       component: mysql
       project: expense
       tier: db
-  serviceName: "nginx"
-  replicas: 3 # by default is 1
   template:
     metadata:
       labels:
-        # has to match .spec.selector.matchLabels
         component: mysql
         project: expense
         tier: db
@@ -39,20 +37,25 @@ spec:
       - name: mysql
         image: charan466/mysql:v1.0.0
         ports:
-        - containerPort: 80
-          name: web
+        - containerPort: 3306
+          name: mysql
         env:
-          - name: MYSQL_ROOT_PASSWORD
-            value: ExpenseApp@1
+        - name: MYSQL_ROOT_PASSWORD
+          value: ExpenseApp@1
         volumeMounts:
-        - name: mysql
+        - name: mysql-data
           mountPath: /var/lib/mysql
       nodeSelector:
-          topology.kubernetes.io/zone: us-east-1f
-      volumes:
-      - name: mysql
-        persistentVolumeClaim:
-          claimName: mysql
+        topology.kubernetes.io/zone: us-east-1f
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: expense-ebs
+      resources:
+        requests:
+          storage: 2Gi
 
 ---
 
@@ -64,7 +67,7 @@ metadata:
 spec:
   clusterIP: None # This is called headless service
   selector:
-    omponent: mysql
+    component: mysql
     project: expense
     tier: db
   ports:
