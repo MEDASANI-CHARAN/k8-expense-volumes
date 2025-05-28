@@ -57,9 +57,9 @@ spec:
       - name: mysql
         image: charan466/mysql:v1.0.0
         imagePullPolicy: Always
-        # env:
-        # - name: MYSQL_ROOT_PASSWORD
-        #   value: ExpenseApp@1
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: ExpenseApp@1
         volumeMounts:
         - name: mysql
           mountPath: /var/lib/mysql
