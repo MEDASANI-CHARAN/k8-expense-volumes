@@ -44,7 +44,6 @@ spec:
         component: mysql
         project: expense
         tier: db
-spec:
   serviceName: "mysql-headless" # you must create this Headless Service
   replicas: 2
   template:
