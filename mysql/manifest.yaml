@@ -61,7 +61,7 @@ spec:
         # - name: MYSQL_ROOT_PASSWORD
         #   value: ExpenseApp@1
         volumeMounts:
-        - name: mysql-data
+        - name: mysql
           mountPath: /var/lib/mysql
       nodeSelector:
         topology.kubernetes.io/zone: us-east-1f
