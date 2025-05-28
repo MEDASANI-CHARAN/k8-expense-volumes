@@ -38,11 +38,11 @@ kind: StatefulSet
 metadata:
   name: mysql
   namespace: expense
-selector:
-    matchLabels:
-      component: mysql
-      project: expense
-      tier: db
+  selector:
+      matchLabels:
+        component: mysql
+        project: expense
+        tier: db
 spec:
   serviceName: "mysql-headless" # you must create this Headless Service
   replicas: 2
