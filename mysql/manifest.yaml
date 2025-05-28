@@ -9,7 +9,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 4Gi
+      storage: 8Gi
 
 ---
 
@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: charan466/mysql:1.0.0
+        image: charan466/mysql:v1.0.0
         ports:
         - containerPort: 3306
           name: mysql
